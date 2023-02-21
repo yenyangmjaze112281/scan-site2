@@ -1,61 +1,56 @@
-import argparse
-import requests, json
+import requests
+from pyfiglet import Figlet
 import sys
-from sys import argv
-import os
+from rich import print
 
-#arguments and parser
+sys.tracebacklimit = 0
 
-parser = argparse.ArgumentParser()
+def info(ip):
+    try:
+        response = requests.get(url=f"http://ip-api.com/json/{ip}").json()
+        
+        data = {
+            "IP": response.get("query"),
+            "Country": response.get("country"),
+            "Region": response.get("regionName"),
+            "City": response.get("city"),
+            "Zip-code": response.get("zip"),
+            "Lat": response.get("lat"),
+            "Long": response.get("lon"),
+            "Timezone": response.get("timezone"),
+            "Provider": response.get("isp"),
+            "Organization": response.get("org")
+        }
 
-parser.add_argument ("-ip", help= "ip-info -ip (your ip)", type=str, dest='target', required=True )
+        for k, e in data.items():
+            print(f"[bold cyan]{k}: [bold yellow]{e}")
+        print("")
 
-args = parser.parse_args()
+    except Exception as e:
+        print(f"[bold red]An '{e}' error occurred")
 
-#colours used
-red = '\033[31m'
-yellow = '\033[93m'
-lgreen = '\033[92m'
-clear = '\033[0m'
-bold = '\033[01m'
-cyan = '\033[96m'
+def main():
+    print(Figlet().renderText("IP checker"))
+    while True:
+        print("script by yen yang mjaze")
+        print("[bold cyan]1 - Your [yellow]IP adress[/yellow];\n2 - Info about [yellow]any IP adress[/yellow]\n")
+        try:
+            choice = int(input(">>> "))
+        except:
+            print("[bold red]Type 1 or 2!")
+        else:
+            if choice == 1:
+                url = "https://icanhazip.com/"
+                response = requests.get(url).text
+                print(f"[bold green]Your IP is [bold yellow]{response}")
+            elif choice == 2:
+                print("[cyan]Enter an IP that will be checked")
+                try:
+                    ip = input("IP: ")
+                    info(ip)
 
-os.system("toilet -f mono12 -F gay yen yang majaze")
-print (lgreen+bold+"         (...... coded by yen yang majaze .....) \n"+clear)
-print (yellow+bold+"   ((.... search on telegram https://t.me/hacker1122811 ....)) \n"+clear)
+                except Exception as e:
+                    print(f"[bold red][ERROR] {e}")
 
-
-ip = args.target
-
-api = "http://ip-api.com/json/"
-
-try:
-        data = requests.get(api+ip).json()
-        sys.stdout.flush()
-        a = lgreen+bold+"[$]"
-        b = cyan+bold+"[$]"
-        print (a, "Victim", data['query'])
-        print(red+"iran Anonymos"+red)
-        print (b, "ISP", data['isp'])
-        print(red+"iran Anonymos"+red)
-        print (a, "[Organisation", data['org'])
-        print(red+"yen yang mjaze"+red)
-        print (b, "City", data['city'])
-        print(red+"iran Anonymos"+red)
-        print (a, "Region", data['region'])
-        print(red+"iran Anonymos"+red)
-        print (b, "Longitude", data['lon'])
-        print(red+"yen yang majaze"+red)
-        print (a, "Latitude", data['lat'])
-        print(red+"yen yang majaze"+red)
-        print (b, "Time zone", data['timezone'])
-        print(red+"iran Anonymos"+red)
-        print (a, "Zip code", data['zip'])
-        print (" "+yellow)
-
-except KeyboardInterrupt:
-        print ('mersi'+lgreen)
-        sys.exit(0)
-except requests.exceptions.ConnectionError as e:
-        print (red+"[~]"+" no internet ! "+clear)
-sys.exit(1)
+if __name__ == "__main__":
+    main()
